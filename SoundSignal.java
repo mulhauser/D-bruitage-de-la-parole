@@ -185,12 +185,34 @@ public class SoundSignal {
 	
 	data.close() ;
     }
-    
+
+
+    double[] fenetrageHamming(int size){
+        double c1 = (double) 0.54;
+        double c2 = (double) 0.46;
+        double[] hamming = new double[size];
+        for(int i = 0; i < size; i++){
+            hamming[i] = c1 - (double) (c2 * Math.cos((double) 2 * Math.PI * i / (size-1)));
+        }
+        return hamming;
+    }
+
+    public double[] reconstructionSignal(int m, int N){
+        double[] res = new double[((signal.length-N)/m)+1];
+        int j = 0;
+        double[] signal_fen;
+        double[] hamming;
+        for(int i = 0; i < this.getSignalLength()-N; i+=m){
+            // Fenetrage Hamming
+            signal_fen = new double[((signal.length-N)/m)+1];
+            hamming = fenetrageHamming(((signal.length-N)/m)+1);
+            signal_fen[i] = this.signal[i]*hamming[i];
+        }
+        return res;
+    }
     
     public double[] signalEnergy(int m, int N){
-      	//System.out.println("m :"+m+" N: "+N);
       	double[] res = new double[((signal.length-N)/m)+1];
-      	//System.out.println(res.length);
       	int j = 0;
       	for(int i = 0; i < this.getSignalLength()-N; i+=m){
 			res[j] = energy(i,N);
@@ -302,12 +324,12 @@ public class SoundSignal {
 	    }*/
 
 	    // Test signalAutoCorrelation
-	    double[][] res = signal.signalCoefficientAutocorrelation(8*signal.getSamplingFrequency()/1000, 32*signal.getSamplingFrequency()/1000, 32*signal.getSamplingFrequency()/1000);
+	    /*double[][] res = signal.signalCoefficientAutocorrelation(8*signal.getSamplingFrequency()/1000, 32*signal.getSamplingFrequency()/1000, 32*signal.getSamplingFrequency()/1000);
 	    for(int i = 0; i < res.length; i++){
 	    	for(int j = 0; j < res[i].length; j++){
 	    		System.out.println(res[i][j]);
 	    	}
-	    }
+	    }*/
 	    
 	} catch (IOException e) {
 	    System.err.println("error cannot read file <" + args[0] + ">");
